@@ -1,9 +1,22 @@
 doctype html
 html
   head
-    title Crowdsource
+    title= title
+    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
+    link(rel='stylesheet', href='./style.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js')
   body
     div(classname='home col-sm-4 col-sm-offset-4')
-      h1 Crowdsource
+      h1= title
+      form
+        | Poll Question:
+        br
+        input(type='text', name='poll')
+        br
+        |   Response:
+        br
+        input(type='text', name='response-1')
+        br
+        input(type='submit', value='Submit')
     script(src='/socket.io/socket.io.js')
     script(src='/client.js')
