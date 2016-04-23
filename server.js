@@ -6,19 +6,42 @@ const server = http.createServer(app)
                     .listen(port, function () {
                       console.log('Listening on port ' + port + '.');
                     });
+const generateId = require('./lib/generate-id');
+const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const io = socketIo(server);
 
 app.set('view engine', 'jade');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 app.locals.title = 'Crowdsource';
+app.locals.polls = {};
 
 
 /* Routes */
 app.get('/', function (request, response){
   response.render('index');
+});
+
+app.post('/polls', (request, response) => {
+  if (!request.body.poll_question) { return response.sendStatus(400); }
+
+  var dashboardId = generateId();
+  var votingId = generateId();
+
+  app.locals.polls[dashboardId] = request.body;
+  app.locals.polls[dashboardId]['votingId'] = votingId;
+
+  response.redirect('/polls/' + dashboardId);
+});
+
+app.get('/polls/:id', (request, response) => {
+  var poll = app.locals.polls[request.params.id];
+
+  response.render('poll-dashboard', { poll: poll });
 });
 
 

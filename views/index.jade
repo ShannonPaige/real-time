@@ -1,22 +1,18 @@
-doctype html
-html
-  head
-    title= title
-    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
-    link(rel='stylesheet', href='./style.css')
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js')
-  body
-    div(classname='home col-sm-4 col-sm-offset-4')
-      h1= title
-      form
+extend layout
+
+block content
+  .container
+    h1= title
+    h2 Create a Poll
+    form(action='/polls', method='POST')
+      .form-group
         | Poll Question:
+        input(type='text', name='poll_question')
+      .form-group
+        | Option 1:
+        input(type='text', name='option-1')
         br
-        input(type='text', name='poll')
-        br
-        |   Response:
-        br
-        input(type='text', name='response-1')
-        br
-        input(type='submit', value='Submit')
-    script(src='/socket.io/socket.io.js')
-    script(src='/client.js')
+        | Option 2:
+        input(type='text', name='option-2')
+      button.btn.btn-default(type='submit')
+        | Submit
