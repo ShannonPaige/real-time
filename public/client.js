@@ -11,3 +11,12 @@ var voteConfirmation = document.getElementById('vote-confirmation');
 socket.on('voteConfirmation', function (vote) {
   voteConfirmation.innerText = 'Your vote for "' + vote + '" has been counted.';
 });
+
+var votesCount = document.getElementById('votes_count');
+socket.on('voteCount', function (votes) {
+  var votingResults = '';
+  for (var vote in votes) {
+    votingResults += vote + ': ' + votes[vote] + '\n';
+  }
+  votesCount.innerText = votingResults;
+});

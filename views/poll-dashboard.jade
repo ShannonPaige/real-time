@@ -8,8 +8,7 @@ block content
     h2 Link to Share Poll
     a(href=poll.votingLink, target='_new')= poll.votingLink
     h2 Poll Results
-    #vote-results
-    if poll.votes.length
-      p No results yet
-    else
-      p results soon
+    #votes_count
+      | No Results Yet
+      each vote in poll.votes
+        p= option

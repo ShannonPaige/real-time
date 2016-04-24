@@ -9,6 +9,8 @@ const server = http.createServer(app)
                       console.log('Listening on port ' + port + '.');
                     });
 const generateId = require('./lib/generate-id');
+const countVotes = require('./lib/count-votes');
+const setPolltoZero = require('./lib/zero-poll');
 const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const io = socketIo(server);
@@ -39,6 +41,7 @@ app.post('/polls', (request, response) => {
   app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
   app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
   app.locals.polls[dashboardId].votes = [];
+  app.locals.polls[dashboardId].voteTally = setPolltoZero(app.locals.polls[dashboardId].poll_options);
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -64,6 +67,7 @@ io.on('connection', function (socket) {
   console.log('A user has connected.', io.engine.clientsCount);
 
   socket.on('message', function (channel, message) {
+
     if (channel === 'voteCast') {
       var currentPoll = '';
       for(var poll in app.locals.polls){
@@ -73,19 +77,7 @@ io.on('connection', function (socket) {
       }
       currentPoll.votes[socket.id] = message.voteContent;
       socket.emit('voteConfirmation', message.voteContent);
-      // io.sockets.emit('voteCount', countVotes(votes));
-    }
-    
-    if (channel === 'voteResults') {
-      var currentPoll = '';
-      for(var poll in app.locals.polls){
-        if(app.locals.polls[poll].votingId === message.votingId){
-          currentPoll = app.locals.polls[poll];
-        }
-      }
-      currentPoll.votes[socket.id] = message.voteContent;
-      socket.emit('voteConfirmation', message.voteContent);
-      // io.sockets.emit('voteCount', countVotes(votes));
+      io.sockets.emit('voteCount', countVotes(currentPoll.voteTally, currentPoll.votes));
     }
   });
 
