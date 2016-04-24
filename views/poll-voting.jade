@@ -3,6 +3,12 @@ extend layout
 block content
   .container
     h1= poll.poll_question
-    ul
+    form(action='/polls/vote', method='POST')
+    .form-group
       each option in poll.poll_options
-        li= option
+        .radio
+          label
+            input(type='radio', name='optionsRadios', value='option1', checked='')
+            | #{option}
+    button.btn.btn-default(type='submit')
+      | Submit

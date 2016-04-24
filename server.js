@@ -54,7 +54,6 @@ app.get('/polls/vote/:id', (request, response) => {
       votePoll = app.locals.polls[poll];
     }
   }
-  eval(locus);
   response.render('poll-voting', { poll: votePoll });
 });
 
