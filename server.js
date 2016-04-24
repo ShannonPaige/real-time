@@ -1,3 +1,5 @@
+require('locus')
+
 const http = require('http');
 const express = require('express');
 const app = express();
@@ -35,7 +37,7 @@ app.post('/polls', (request, response) => {
   app.locals.polls[dashboardId] = request.body;
   app.locals.polls[dashboardId].votingId = votingId;
   app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
-  app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/' + votingId;
+  app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -44,6 +46,16 @@ app.get('/polls/:id', (request, response) => {
   var poll = app.locals.polls[request.params.id];
 
   response.render('poll-dashboard', { poll: poll });
+});
+
+app.get('/polls/vote/:id', (request, response) => {
+  var votePoll = '';
+  for(var poll in app.locals.polls){
+    if(app.locals.polls[poll].votingId === request.params.id){
+      votePoll = app.locals.polls[poll];
+    }
+  }
+  response.render('poll-voting', { poll: votePoll });
 });
 
 
