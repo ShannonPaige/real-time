@@ -3,3 +3,6 @@ extend layout
 block content
   .container
     h1= poll.poll_question
+    ul
+      each option in poll.poll_options
+        li= option

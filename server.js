@@ -44,7 +44,6 @@ app.post('/polls', (request, response) => {
 
 app.get('/polls/:id', (request, response) => {
   var poll = app.locals.polls[request.params.id];
-
   response.render('poll-dashboard', { poll: poll });
 });
 
@@ -55,6 +54,7 @@ app.get('/polls/vote/:id', (request, response) => {
       votePoll = app.locals.polls[poll];
     }
   }
+  eval(locus);
   response.render('poll-voting', { poll: votePoll });
 });
 

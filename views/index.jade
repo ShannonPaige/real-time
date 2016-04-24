@@ -10,9 +10,9 @@ block content
         input(type='text', name='poll_question')
       .form-group
         | Option 1:
-        input(type='text', name='option_1')
+        input(type='text', name='poll_options[]')
         br
         | Option 2:
-        input(type='text', name='option_2')
+        input(type='text', name='poll_options[]')
       button.btn.btn-default(type='submit')
         | Submit
