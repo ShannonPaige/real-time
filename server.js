@@ -1,4 +1,4 @@
-require('locus')
+require('locus');
 
 const http = require('http');
 const express = require('express');
@@ -38,6 +38,7 @@ app.post('/polls', (request, response) => {
   app.locals.polls[dashboardId].votingId = votingId;
   app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
   app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
+  app.locals.polls[dashboardId].votes = [];
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -48,19 +49,45 @@ app.get('/polls/:id', (request, response) => {
 });
 
 app.get('/polls/vote/:id', (request, response) => {
-  var votePoll = '';
+  var currentPoll = '';
   for(var poll in app.locals.polls){
     if(app.locals.polls[poll].votingId === request.params.id){
-      votePoll = app.locals.polls[poll];
+      currentPoll = app.locals.polls[poll];
     }
   }
-  response.render('poll-voting', { poll: votePoll });
+  response.render('poll-voting', { poll: currentPoll });
 });
 
 
 /* Sockets */
 io.on('connection', function (socket) {
   console.log('A user has connected.', io.engine.clientsCount);
+
+  socket.on('message', function (channel, message) {
+    if (channel === 'voteCast') {
+      var currentPoll = '';
+      for(var poll in app.locals.polls){
+        if(app.locals.polls[poll].votingId === message.votingId){
+          currentPoll = app.locals.polls[poll];
+        }
+      }
+      currentPoll.votes[socket.id] = message.voteContent;
+      socket.emit('voteConfirmation', message.voteContent);
+      // io.sockets.emit('voteCount', countVotes(votes));
+    }
+    
+    if (channel === 'voteResults') {
+      var currentPoll = '';
+      for(var poll in app.locals.polls){
+        if(app.locals.polls[poll].votingId === message.votingId){
+          currentPoll = app.locals.polls[poll];
+        }
+      }
+      currentPoll.votes[socket.id] = message.voteContent;
+      socket.emit('voteConfirmation', message.voteContent);
+      // io.sockets.emit('voteCount', countVotes(votes));
+    }
+  });
 
   socket.on('disconnect', function () {
     console.log('A user has disconnected.', io.engine.clientsCount);

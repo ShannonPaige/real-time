@@ -3,12 +3,8 @@ extend layout
 block content
   .container
     h1= poll.poll_question
-    form(action='/polls/vote', method='POST')
-    .form-group
+    #choices
       each option in poll.poll_options
-        .radio
-          label
-            input(type='radio', name='optionsRadios', value='option1', checked='')
-            | #{option}
-    button.btn.btn-default(type='submit')
-      | Submit
+        button(class=poll.votingId)= option
+    #vote-confirmation
+    p Please note that you can only vote once. If you vote more than once, only the most recent vote will be counted.
