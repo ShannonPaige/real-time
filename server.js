@@ -33,7 +33,9 @@ app.post('/polls', (request, response) => {
   var votingId = generateId();
 
   app.locals.polls[dashboardId] = request.body;
-  app.locals.polls[dashboardId]['votingId'] = votingId;
+  app.locals.polls[dashboardId].votingId = votingId;
+  app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
+  app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/' + votingId;
 
   response.redirect('/polls/' + dashboardId);
 });

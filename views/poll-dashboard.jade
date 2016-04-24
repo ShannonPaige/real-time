@@ -1,1 +1,10 @@
-p poll goes here
+extend layout
+
+block content
+  .container
+    h1= title + ' Dashboard'
+    h2 Link to This Dashboard
+      p= poll.dashboardLink
+    h2 Link to Share Poll
+      p= poll.votingLink
+    h2 Poll Results
