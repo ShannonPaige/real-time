@@ -12,7 +12,7 @@ block content
       #vote-confirmation
       if poll.shareResults
         h3 Voting Results
-        #votes_share
+        div(class=poll.votingId id='votes_share')
           each option in poll.poll_options
             p= option + ': ' + poll.voteTally[option]
     else

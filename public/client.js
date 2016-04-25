@@ -37,12 +37,14 @@ socket.on('voteCount', function (votingInfo) {
 });
 
 var votesShare = document.getElementById('votes_share');
-socket.on('voteShare', function (votes) {
-  var votingResults = '';
-  for (var vote in votes) {
-    votingResults += vote + ': ' + votes[vote] + '\n\n';
+socket.on('voteShare', function (votingInfo) {
+  if (votingInfo.votingId === votesShare.className){
+    var votingResults = '';
+    for (var vote in votingInfo.votes) {
+      votingResults += vote + ': ' + votingInfo.votes[vote] + '\n\n';
+    }
+    votesShare.innerText = votingResults;
   }
-  votesShare.innerText = votingResults;
 });
 
 var closePoll = document.getElementById('close_poll');

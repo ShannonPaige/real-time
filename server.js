@@ -84,7 +84,7 @@ io.on('connection', function (socket) {
       socket.emit('voteConfirmation', message.voteContent);
       var voteCount = countVotes(currentPoll.voteTally, currentPoll.votes);
       if(currentPoll.shareResults === true){
-        io.sockets.emit('voteShare', voteCount);
+        io.sockets.emit('voteShare', {votingId: currentPoll.votingId, votes: voteCount});
       }
       io.sockets.emit('voteCount', {dashboardId: currentPoll.dashboardId, votes: voteCount});
     }
