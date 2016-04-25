@@ -17,5 +17,9 @@ block content
         | Option:
         input(type='text', name='poll_options[]')
         br
+      .form-group
+        | Check this box to share poll results with participants
+        br
+        input(type='checkbox', name='shareResults')
       button.btn.btn-default(type='submit')
         | Submit

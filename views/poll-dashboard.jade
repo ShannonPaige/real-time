@@ -14,7 +14,7 @@ block content
       else
         p You have closed this poll
     a(href='/') Start a New Poll
+    br
     #votes_count
-      | No Results Yet
-      each vote in poll.votes
-        p= option
+      each option in poll.poll_options
+        p= option + ': ' + poll.voteTally[option]

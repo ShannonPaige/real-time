@@ -43,6 +43,8 @@ app.post('/polls', (request, response) => {
   app.locals.polls[dashboardId].votes = [];
   app.locals.polls[dashboardId].voteTally = setPolltoZero(app.locals.polls[dashboardId].poll_options);
   app.locals.polls[dashboardId].open = true;
+  app.locals.polls[dashboardId].shareResults = !!app.locals.polls[dashboardId].shareResults;
+
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -79,7 +81,11 @@ io.on('connection', function (socket) {
       }
       currentPoll.votes[socket.id] = message.voteContent;
       socket.emit('voteConfirmation', message.voteContent);
-      io.sockets.emit('voteCount', countVotes(currentPoll.voteTally, currentPoll.votes));
+      var voteCount = countVotes(currentPoll.voteTally, currentPoll.votes);
+      if(currentPoll.shareResults === true){
+        io.sockets.emit('voteShare', voteCount);
+      }
+      io.sockets.emit('voteCount', voteCount);
     }
 
     if (channel === 'closePoll') {

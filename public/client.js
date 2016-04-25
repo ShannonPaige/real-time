@@ -29,9 +29,18 @@ var votesCount = document.getElementById('votes_count');
 socket.on('voteCount', function (votes) {
   var votingResults = '';
   for (var vote in votes) {
-    votingResults += vote + ': ' + votes[vote] + '\n';
+    votingResults += vote + ': ' + votes[vote] + '\n\n';
   }
   votesCount.innerText = votingResults;
+});
+
+var votesShare = document.getElementById('votes_share');
+socket.on('voteShare', function (votes) {
+  var votingResults = '';
+  for (var vote in votes) {
+    votingResults += vote + ': ' + votes[vote] + '\n\n';
+  }
+  votesShare.innerText = votingResults;
 });
 
 var closePoll = document.getElementById('close_poll');

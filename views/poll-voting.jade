@@ -10,5 +10,10 @@ block content
           each option in poll.poll_options
             button(class=poll.votingId)= option
       #vote-confirmation
+      if poll.shareResults
+        h3 Voting Results
+        #votes_share
+          each option in poll.poll_options
+            p= option + ': ' + poll.voteTally[option]
     else
       p This poll has been closed for voting
