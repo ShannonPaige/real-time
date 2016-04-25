@@ -15,6 +15,6 @@ block content
         p You have closed this poll
     a(href='/') Start a New Poll
     br
-    #votes_count
+    div(class=poll.dashboardId id='votes_count')
       each option in poll.poll_options
         p= option + ': ' + poll.voteTally[option]

@@ -26,12 +26,14 @@ socket.on('voteConfirmation', function (vote) {
 });
 
 var votesCount = document.getElementById('votes_count');
-socket.on('voteCount', function (votes) {
-  var votingResults = '';
-  for (var vote in votes) {
-    votingResults += vote + ': ' + votes[vote] + '\n\n';
+socket.on('voteCount', function (votingInfo) {
+  if (votingInfo.dashboardId === votesCount.className){
+    var votingResults = '';
+    for (var vote in votingInfo.votes) {
+      votingResults += vote + ': ' + votingInfo.votes[vote] + '\n\n';
+    }
+    votesCount.innerText = votingResults;
   }
-  votesCount.innerText = votingResults;
 });
 
 var votesShare = document.getElementById('votes_share');

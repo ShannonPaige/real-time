@@ -38,6 +38,7 @@ app.post('/polls', (request, response) => {
 
   app.locals.polls[dashboardId] = request.body;
   app.locals.polls[dashboardId].votingId = votingId;
+  app.locals.polls[dashboardId].dashboardId = dashboardId;
   app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
   app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
   app.locals.polls[dashboardId].votes = [];
@@ -85,7 +86,7 @@ io.on('connection', function (socket) {
       if(currentPoll.shareResults === true){
         io.sockets.emit('voteShare', voteCount);
       }
-      io.sockets.emit('voteCount', voteCount);
+      io.sockets.emit('voteCount', {dashboardId: currentPoll.dashboardId, votes: voteCount});
     }
 
     if (channel === 'closePoll') {
