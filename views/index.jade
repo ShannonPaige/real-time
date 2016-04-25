@@ -8,11 +8,14 @@ block content
       .form-group
         | Poll Question:
         input(type='text', name='poll_question')
-      .form-group
-        | Option 1:
+      button.btn.btn-default(type='add_option')#add_option
+        | Add another option
+      .form-group#options
+        | Option:
         input(type='text', name='poll_options[]')
         br
-        | Option 2:
+        | Option:
         input(type='text', name='poll_options[]')
+        br
       button.btn.btn-default(type='submit')
         | Submit

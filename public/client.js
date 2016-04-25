@@ -7,6 +7,19 @@ for (var i = 0; i < buttons.length; i++) {
   });
 }
 
+var addOption = document.getElementById('add_option');
+if (!!addOption){
+  addOption.addEventListener('click', function (e) {
+    e.preventDefault();
+    socket.send('addOption');
+  });
+}
+
+var options = document.getElementById('options');
+socket.on('addAnotherOption', function () {
+  options.innerHTML = options.innerHTML + 'Option:<input type="text" name="poll_options[]"><br />';
+});
+
 var voteConfirmation = document.getElementById('vote-confirmation');
 socket.on('voteConfirmation', function (vote) {
   voteConfirmation.innerText = 'Your vote for "' + vote + '" has been counted.';

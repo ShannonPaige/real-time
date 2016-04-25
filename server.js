@@ -89,7 +89,11 @@ io.on('connection', function (socket) {
         }
       }
       currentPoll.open = false;
-      io.sockets.emit('pollStatus');    
+      io.sockets.emit('pollStatus');
+    }
+
+    if (channel === 'addOption') {
+      socket.emit('addAnotherOption');
     }
   });
 
