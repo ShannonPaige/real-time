@@ -2,9 +2,13 @@ extend layout
 
 block content
   .container
-    h1= poll.poll_question
-    #choices
-      each option in poll.poll_options
-        button(class=poll.votingId)= option
-    #vote-confirmation
-    p Please note that you can only vote once. If you vote more than once, only the most recent vote will be counted.
+    if poll.open
+      #poll_status
+        h1= poll.poll_question
+        #choices
+          p Please note that you can only vote once. If you vote more than once, only the most recent vote will be counted.
+          each option in poll.poll_options
+            button(class=poll.votingId)= option
+      #vote-confirmation
+    else
+      p This poll has been closed for voting

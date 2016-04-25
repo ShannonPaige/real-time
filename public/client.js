@@ -20,3 +20,15 @@ socket.on('voteCount', function (votes) {
   }
   votesCount.innerText = votingResults;
 });
+
+var closePoll = document.getElementById('close_poll');
+if (!!closePoll){
+  closePoll.addEventListener('click', function () {
+    socket.send('closePoll', {votingId: this.className});
+  });
+}
+
+var pollStatus = document.getElementById('poll_status');
+socket.on('pollStatus', function () {
+  pollStatus.innerText = 'This poll has been closed for voting';
+});

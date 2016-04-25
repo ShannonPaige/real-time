@@ -8,6 +8,12 @@ block content
     h2 Link to Share Poll
     a(href=poll.votingLink, target='_new')= poll.votingLink
     h2 Poll Results
+    #poll_status
+      if poll.open
+        button(class=poll.votingId id='close_poll') Close Poll
+      else
+        p You have closed this poll
+    a(href='/') Start a New Poll
     #votes_count
       | No Results Yet
       each vote in poll.votes

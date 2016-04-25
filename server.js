@@ -1,4 +1,4 @@
-// require('locus');
+require('locus');
 
 const http = require('http');
 const express = require('express');
@@ -42,6 +42,7 @@ app.post('/polls', (request, response) => {
   app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
   app.locals.polls[dashboardId].votes = [];
   app.locals.polls[dashboardId].voteTally = setPolltoZero(app.locals.polls[dashboardId].poll_options);
+  app.locals.polls[dashboardId].open = true;
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -67,10 +68,11 @@ io.on('connection', function (socket) {
   console.log('A user has connected.', io.engine.clientsCount);
 
   socket.on('message', function (channel, message) {
+    var currentPoll = '';
+    var poll = '';
 
     if (channel === 'voteCast') {
-      var currentPoll = '';
-      for(var poll in app.locals.polls){
+      for(poll in app.locals.polls){
         if(app.locals.polls[poll].votingId === message.votingId){
           currentPoll = app.locals.polls[poll];
         }
@@ -78,6 +80,16 @@ io.on('connection', function (socket) {
       currentPoll.votes[socket.id] = message.voteContent;
       socket.emit('voteConfirmation', message.voteContent);
       io.sockets.emit('voteCount', countVotes(currentPoll.voteTally, currentPoll.votes));
+    }
+
+    if (channel === 'closePoll') {
+      for(poll in app.locals.polls){
+        if(app.locals.polls[poll].votingId === message.votingId){
+          currentPoll = app.locals.polls[poll];
+        }
+      }
+      currentPoll.open = false;
+      io.sockets.emit('pollStatus');    
     }
   });
 
