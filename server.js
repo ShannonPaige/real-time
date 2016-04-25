@@ -1,19 +1,20 @@
-// require('locus');
-
-const http = require('http');
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
-const server = http.createServer(app)
-                    .listen(port, function () {
-                      console.log('Listening on port ' + port + '.');
-                    });
-const generateId = require('./lib/generate-id');
-const countVotes = require('./lib/count-votes');
-const setPolltoZero = require('./lib/zero-poll');
-const bodyParser = require('body-parser');
-const socketIo = require('socket.io');
-const io = socketIo(server);
+require('locus');
+var http            = require('http');
+var express         = require('express');
+var app             = express();
+var port            = process.env.PORT || 3000;
+var server          = http.createServer(app)
+                      .listen(port, function () {
+                        console.log('Listening on port ' + port + '.');
+                      });
+var countVotes      = require('./lib/count-votes');
+var findCurrentPoll = require('./lib/find-current-poll');
+var generateId      = require('./lib/generate-id');
+var pollVariables   = require('./lib/poll-variables');
+var bodyParser      = require('body-parser');
+var socketIo        = require('socket.io');
+var currentPoll     = '';
+var io              = socketIo(server);
 
 app.set('view engine', 'jade');
 
@@ -25,7 +26,7 @@ app.locals.title = 'Crowdsource';
 app.locals.polls = {};
 
 
-/* Routes */
+/* ROUTES */
 app.get('/', function (request, response){
   response.render('index');
 });
@@ -35,17 +36,8 @@ app.post('/polls', (request, response) => {
 
   var dashboardId = generateId();
   var votingId = generateId();
-
   app.locals.polls[dashboardId] = request.body;
-  app.locals.polls[dashboardId].votingId = votingId;
-  app.locals.polls[dashboardId].dashboardId = dashboardId;
-  app.locals.polls[dashboardId].dashboardLink = 'http://' + request.headers.host + '/polls/' + dashboardId;
-  app.locals.polls[dashboardId].votingLink = 'http://' + request.headers.host + '/polls/vote/' + votingId;
-  app.locals.polls[dashboardId].votes = [];
-  app.locals.polls[dashboardId].voteTally = setPolltoZero(app.locals.polls[dashboardId].poll_options);
-  app.locals.polls[dashboardId].open = true;
-  app.locals.polls[dashboardId].shareResults = !!app.locals.polls[dashboardId].shareResults;
-
+  pollVariables(app.locals.polls[dashboardId], votingId, dashboardId, request.headers.host);
 
   response.redirect('/polls/' + dashboardId);
 });
@@ -56,32 +48,23 @@ app.get('/polls/:id', (request, response) => {
 });
 
 app.get('/polls/vote/:id', (request, response) => {
-  var currentPoll = '';
-  for(var poll in app.locals.polls){
-    if(app.locals.polls[poll].votingId === request.params.id){
-      currentPoll = app.locals.polls[poll];
-    }
-  }
+  currentPoll = findCurrentPoll(app.locals.polls, request.params.id);
+
   response.render('poll-voting', { poll: currentPoll });
 });
 
 
-/* Sockets */
+/* SOCKETS */
 io.on('connection', function (socket) {
   console.log('A user has connected.', io.engine.clientsCount);
 
   socket.on('message', function (channel, message) {
-    var currentPoll = '';
-    var poll = '';
 
     if (channel === 'voteCast') {
-      for(poll in app.locals.polls){
-        if(app.locals.polls[poll].votingId === message.votingId){
-          currentPoll = app.locals.polls[poll];
-        }
-      }
+      currentPoll = findCurrentPoll(app.locals.polls, message.votingId);
       currentPoll.votes[socket.id] = message.voteContent;
       socket.emit('voteConfirmation', message.voteContent);
+
       var voteCount = countVotes(currentPoll.voteTally, currentPoll.votes);
       if(currentPoll.shareResults === true){
         io.sockets.emit('voteShare', {votingId: currentPoll.votingId, votes: voteCount});
@@ -90,11 +73,7 @@ io.on('connection', function (socket) {
     }
 
     if (channel === 'closePoll') {
-      for(poll in app.locals.polls){
-        if(app.locals.polls[poll].votingId === message.votingId){
-          currentPoll = app.locals.polls[poll];
-        }
-      }
+      currentPoll = findCurrentPoll(app.locals.polls, message.votingId);
       currentPoll.open = false;
       io.sockets.emit('pollStatus');
     }
