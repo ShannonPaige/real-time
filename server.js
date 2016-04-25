@@ -1,20 +1,24 @@
-require('locus');
+// require('locus');
 var http            = require('http');
 var express         = require('express');
 var app             = express();
 var port            = process.env.PORT || 3000;
-var server          = http.createServer(app)
-                      .listen(port, function () {
-                        console.log('Listening on port ' + port + '.');
-                      });
 var countVotes      = require('./lib/count-votes');
 var findCurrentPoll = require('./lib/find-current-poll');
 var generateId      = require('./lib/generate-id');
 var pollVariables   = require('./lib/poll-variables');
 var bodyParser      = require('body-parser');
 var socketIo        = require('socket.io');
+var server          = http.createServer(app);
 var currentPoll     = '';
 var io              = socketIo(server);
+
+
+if (!module.parent) {
+  server.listen(port, function () {
+    console.log('Listening on port ' + port + '.');
+  });
+}
 
 app.set('view engine', 'jade');
 
